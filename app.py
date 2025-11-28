@@ -213,6 +213,19 @@ def registrar_dose():
     print(f"✓ Registro salvo: Med {dados['id_med']} em {dados['data']} {dados.get('horario', '')} - {dados['status']}")
     return jsonify({"sucesso": True, "status": "verde", "dataHoraTomada": data_hora_atual})
 
+@app.route('/api/registros', methods=['GET'])
+def listar_registros():
+    """Retorna todos os registros salvos"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM registros WHERE status = "tomado"')
+    registros = [dict(row) for row in cursor.fetchall()]
+    
+    conn.close()
+    return jsonify(registros)
+
 @app.route('/api/alertas', methods=['GET'])
 def verificar_alertas():
     """Retorna alertas pendentes que devem tocar agora"""
